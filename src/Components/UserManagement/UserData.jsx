@@ -6,10 +6,10 @@ function UserData() {
     const hookState = useSelector((state) => state.UserManagementReducer);
     // console.log(hookState.userList);
     const renderUserList = () => {
-        hookState.userList.map((ele) => {
+        return hookState.userList.map((ele, idx) => {
             const { id, userName, fullName, email, phone, type } = ele;
             return (
-                <tr className='bg-light'>
+                <tr key={idx} className='bg-light'>
                     <td>{id}</td>
                     <td>{userName}</td>
                     <td>{fullName}</td>
