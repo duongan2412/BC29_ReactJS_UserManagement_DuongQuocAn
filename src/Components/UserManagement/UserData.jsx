@@ -1,27 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { deleteUserAction, selectedUserAction } from '../../Store/Action/userAction';
 
 function UserData() {
     const dispatch = useDispatch();
     const hookState = useSelector((state) => state.UserManagementReducer);
-    // console.log(hookState.userList);
+
+    const [state, setState] = useState({
+        keyword: '',
+        selectedType: 'All'
+    });
+
+    let data = hookState.userList.filter(ele => {
+        return ele.fullName.toLowerCase().trim().indexOf(state.keyword.toLowerCase().trim()) !== - 1
+    });
+
+    if (state.selectedType !== 'All') {
+        data = data.filter((ele) => ele.type === state.selectedType);
+    };
+
     const renderUserList = () => {
-        return hookState.userList.map((ele, idx) => {
+        return data.map((ele, idx) => {
             const { id, userName, fullName, email, phone, type } = ele;
             return (
-                <tr key={idx} className='bg-light'>
-                    <td>{id}</td>
+                <tr key={id} className='bg-light'>
+                    <td>{idx + 1}</td>
                     <td>{userName}</td>
                     <td>{fullName}</td>
                     <td>{email}</td>
                     <td>{phone}</td>
                     <td>{type}</td>
                     <td>
-                        <button className="btn btn-info mr-2">EDIT</button>
-                        <button className="btn btn-danger">DELETE</button>
+                        <button
+                            onClick={() => {
+                                dispatch(selectedUserAction(ele));
+                            }}
+                            className="btn btn-info mr-2">EDIT</button>
+                        <button
+                            onClick={() => {
+                                dispatch(deleteUserAction(ele.id))
+                            }}
+                            className="btn btn-danger">DELETE</button>
                     </td>
                 </tr>
             )
+        })
+    }
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setState({
+            ...state,
+            [name]: value
         })
     }
     return (
@@ -35,12 +65,17 @@ function UserData() {
                                 type="text"
                                 placeholder="Search by full name..."
                                 className="form-control"
+                                onChange={handleChange}
+                                name='keyword'
                             />
                         </div>
                     </div>
                     <div className="col-3 ml-auto">
                         <div className="form-group mb-0">
-                            <select className="form-control">
+                            <select
+                                onChange={handleChange}
+                                name='selectedType'
+                                className="form-control">
                                 <option>All</option>
                                 <option>Client</option>
                                 <option>Admin</option>
