@@ -27,9 +27,12 @@ function RegisterForm() {
         values: DEFAULT_VALUES,
         errors: DEFAULT_ERRORS
     });
+
+    const [valid, setValid] = useState({ isValid: false })
+
     const formRef = useRef();
     const dispatch = useDispatch();
-    const { userList, userSelected } = useSelector((state) => state.UserManagementReducer);
+    const { userSelected } = useSelector((state) => state.UserManagementReducer);
 
     useEffect(() => {
         if (userSelected)
@@ -76,14 +79,17 @@ function RegisterForm() {
         })
     }
 
-    // const [, updateState] = useState();
-    // const forceUpdate = useCallback(() => updateState({}), []);
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
         if (!event.target.checkValidity()) {
             return;
-        };
+        } else {
+            setValid({
+                isValid: true,
+            })
+        }
 
         userSelected ? dispatch(updateUserAction(state.values)) : dispatch(addUserAction(state.values));
 
@@ -91,7 +97,10 @@ function RegisterForm() {
             values: DEFAULT_VALUES,
             errors: DEFAULT_ERRORS
         });
-        // forceUpdate();
+
+        setValid({
+            isValid: false
+        });
     }
 
     const { userName, fullName, email, password, phone, type } = state.values;
@@ -204,8 +213,9 @@ function RegisterForm() {
                         </div>
                         <div className="card-footer text-muted">
                             <button
-                                // onClick={() => { forceUpdate() }}
-                                disabled={!formRef.current?.checkValidity()}
+                                onClick={() => { console.log(!valid.isValid) }}
+                                // disabled={!formRef.current?.checkValidity()}
+                                disabled={valid.isValid}
                                 type='submit'
                                 className="btn btn-warning mr-2">SAVE</button>
                             <button type='reset' className="btn btn-outline-dark">RESET</button>
