@@ -28,7 +28,7 @@ function RegisterForm() {
         errors: DEFAULT_ERRORS
     });
 
-    const [valid, setValid] = useState({ isValid: false })
+    const [valid, setValid] = useState({ isValid: true })
 
     const formRef = useRef();
     const dispatch = useDispatch();
@@ -77,18 +77,19 @@ function RegisterForm() {
             values: { ...state.values },
             errors: { ...state.errors, [name]: message }
         })
+
+        console.log(formRef.current?.checkValidity())
+        if (formRef.current?.checkValidity()) {
+            setValid({
+                isValid: false,
+            })
+        }
     }
-
-
 
     const handleSubmit = (event) => {
         event.preventDefault();
         if (!event.target.checkValidity()) {
             return;
-        } else {
-            setValid({
-                isValid: true,
-            })
         }
 
         userSelected ? dispatch(updateUserAction(state.values)) : dispatch(addUserAction(state.values));
@@ -99,7 +100,7 @@ function RegisterForm() {
         });
 
         setValid({
-            isValid: false
+            isValid: true
         });
     }
 
@@ -202,6 +203,7 @@ function RegisterForm() {
                                     <label>Type</label>
                                     <select className="form-control"
                                         onChange={handleChange}
+                                        onBlur={handleBlur}
                                         name='type'
                                         value={type}
                                     >
@@ -213,12 +215,19 @@ function RegisterForm() {
                         </div>
                         <div className="card-footer text-muted">
                             <button
-                                onClick={() => { console.log(!valid.isValid) }}
+                                // onClick={() => { console.log(valid.isValid) }}
                                 // disabled={!formRef.current?.checkValidity()}
                                 disabled={valid.isValid}
                                 type='submit'
                                 className="btn btn-warning mr-2">SAVE</button>
-                            <button type='reset' className="btn btn-outline-dark">RESET</button>
+                            <button
+                                onClick={() => {
+                                    setState({
+                                        values: DEFAULT_VALUES,
+                                        errors: DEFAULT_ERRORS
+                                    })
+                                }}
+                                type='reset' className="btn btn-outline-dark">RESET</button>
                         </div>
                     </form>
                 </div>
